@@ -1,0 +1,7 @@
+#  matplotlib, numpy, cv2 fro a requirements.txt file
+matplotlib=3.8.2
+numpy=1.25.1
+opencv-python=4.9.0
+
+
+
