@@ -32,5 +32,11 @@ sh exe.sh
 ```
 The executable will be in the dist folder. In this location, you can run the following command to execute the app(like the python command above, but without python installed):
 ```
-./dist/app/app
+./dist/app/app -i <input-video> -o <output_directory>
 ```
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
+
