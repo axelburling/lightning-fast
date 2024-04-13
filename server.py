@@ -82,10 +82,10 @@ def api():
     files = request.files
 
     if "video" not in files:
-        return jsonify({"error": "No video file found."})
+        return jsonify({"error": "No video file found."}), 400
     
     # get norm(bool) from request multipart form
-    norm = request.form.get("norm", False)
+    norm = eval(request.form.get("norm", False))
     
     # get the video file
     videos = files.getlist("video")
@@ -100,7 +100,7 @@ def api():
 
         # check if the file is a video
         if not guess_type(video.filename)[0].startswith("video"):
-            return jsonify({"error": "The file is not a video."})
+            return jsonify({"error": "The file is not a video."}), 400
         
         id = str(uuid4())
 
