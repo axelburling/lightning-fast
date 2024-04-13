@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Color change over Time from video input. It automatically downloads the servers response in a form of a zip file.">
+    <title>Color change over Time</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <div class="box">
+        <label class="lab" >Select Response Type</label>
+        <select id="opt">
+            <option value="plot">plot</option>
+            <option value="csv">csv</option>
+        </select>
+        <button class="upload" id="upload">Upload</button>
+    </div>
+
+    <input type="file" hidden id="file" />
+</body>
+<script>
+    const up = document.querySelector("#upload");
+    const file = document.querySelector("#file")
+    const opt = document.querySelector("#opt")
+
+    opt.addEventListener("change", () => {
+        console.log(opt.value)
+    })
+
+    // listen to up press
+    up.addEventListener("click", () => {
+        file.click();
+    });
+
+    server_url = "/api";
+
+    supportedEnc = ["mp4", "webm", "ogg", "avi", "flv", "mov", "wmv", "mkv", "3gp", "m4v", "mpg", "mpeg", "m2v", "m4v", "f4v", "f4p", "f4a", "f4b"];
+
+    // listen to file change
+    file.addEventListener("change", async() => {
+        if(file.files.length !== 1) {
+            M.toast({html: "Please select a file to upload", classes: "error"})
+            return;
+        }
+
+        f = file.files[0];
+        
+        enc = f.name.split('.').pop();
+        if(!supportedEnc.includes(enc)) {
+            M.toast({html: "Unsupported file format, please upload a video file", classes: "error"})
+            return;
+        }
+
+        // create form data
+        const formData = new FormData();
+
+        // append file to form data
+        formData.append("video", f);
+
+        // send file to server
+        const res = await fetch(server_url, {
+            method: "POST",
+            body: formData
+        })
+
+        if (!res.ok) {
+            M.toast({html: "An error occurred while uploading file, please try again", classes: "error"})
+            return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+
+        const a = document.createElement("a");
+
+        a.hidden = true
+        a.href = url;
+        a.download = "video.zip";
+
+        a.click()
+
+        URL.revokeObjectURL(url);
+        M.toast({html: "File uploaded successfully, should be downloaded", classes: "success"})
+        file.value = "";
+    });
+</script>
+<style>
+    /* center box class */
+    .box {
+        width: 40vw;
+        height: 40vh;
+        border: 2px solid #000;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* upload button and center in the box */
+    .upload {
+        width: 15vw;
+        height: 6vh;
+        border: none;
+        background-color: #000;
+        color: #fff;
+        font-size: small;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .upload:hover {
+        background-color: #24211a;
+        color: #fff;
+    }
+    
+    .error {
+        background-color: red;
+        border-radius: 5px;
+    }
+
+    .success {
+        background-color: green;
+        border-radius: 5px;
+    }
+
+    .lab {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+</html>
